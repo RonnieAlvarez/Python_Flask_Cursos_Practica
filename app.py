@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from forms import LoginForm, SignupForm, AddCourseForm
 from models import db, User,Courses
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 port = 5000
@@ -10,6 +11,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql+psycopg2://postgres:!Soporte
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
+
+migrate=Migrate(app,db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -74,7 +77,7 @@ def add_courses():
         url=request.form["url"]
         course=Courses(professor=professor,title=title,description=description,url=url,user_login_id=current_user.id)
         course.save()
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("courses"))
     return render_template("add_course.html", form=form)
 
 @app.route("/dashboard/courses")
